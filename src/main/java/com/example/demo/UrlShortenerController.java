@@ -1,4 +1,8 @@
 package com.example.demo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import com.google.common.hash.Hashing;
@@ -34,7 +38,7 @@ public class UrlShortenerController {
     }
 
     @PostMapping
-    public String create(@RequestBody String url){
+    public URI create(@RequestBody String url){
 
         var urlValidator = new UrlValidator(new String[]{"http", "https"});
 
@@ -42,7 +46,7 @@ public class UrlShortenerController {
             var id = Hashing.murmur3_32().hashString(url, StandardCharsets.UTF_8).toString();
             System.out.println("URL ID GENERATED: " + id);
             redisTemplate.opsForValue().set(id, url);
-            return id;
+            return linkTo(methodOn(UrlShortenerController.class).getUrl(id)).toUri();
         }
         throw new RuntimeException("URL is not valid");
     }    
