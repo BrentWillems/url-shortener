@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  myapp-redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  myapp-main:
+    image: docker.io/library/demo:0.0.1-SNAPSHOT
+    restart: on-failure
+    depends_on:
+      - myapp-redis
+    ports:
+      - 8080:8080
